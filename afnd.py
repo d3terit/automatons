@@ -1,3 +1,5 @@
+# Elaborado por Daniel Hernando Mantilla 
+# Código: 1005040227
 from afd import AFD
 from graphviz import *
 
@@ -5,9 +7,18 @@ from graphviz import *
 class AFND(AFD):
     def __init__(self,):
         super().__init__()
-        self.initial_states = ["s1", "s2"]
-        self.epsilon_transitions = [
-            {"current_state": "s1", "letter": "a", "next_state": "s1"}]
+        self.alphabet = ["a", "b", "c", "λ"]
+        self.states = ["s0", "s1", "s2", "s3"]
+        self.initial_states = ["s0"]
+        self.final_states = ["s3"]
+        self.transitions = [
+            {"current_state": "s0", "letter": "a", "next_state": "s1"},
+            {"current_state": "s1", "letter": "b", "next_state": "s2"},
+            {"current_state": "s1", "letter": "λ", "next_state": "s1"},
+            {"current_state": "s2", "letter": "c", "next_state": "s3"},
+            {"current_state": "s3", "letter": "λ", "next_state": "s1"},
+        ]
+        self.epsilon_transitions = []
         self.epsilon_closure = {}
 
     def showMenu(self):
@@ -138,23 +149,28 @@ class AFND(AFD):
     def showAFNDDiagram(self):
         self.clearConsole()
         diagram = Digraph('G', filename='afnd.gv')
-        diagram.attr(rankdir='LR', size='8,5')
+        diagram.attr(rankdir='LR', size='100,50')
         diagram.attr('node', shape='doublecircle')
         for state in self.final_states:
             diagram.node(state)
             diagram.attr('node', shape='circle')
         for transition in self.transitions:
-            diagram.edge(transition["current_state"], transition["next_state"],
-                   label=transition["letter"])
+            if transition["next_state"] in self.final_states:
+                    diagram.edge(
+                        transition["current_state"], transition["next_state"], label=transition["letter"], color="red")
+            else: diagram.edge(transition["current_state"],
+                             transition["next_state"], label=transition["letter"])
         for transition in self.epsilon_transitions:
-            diagram.edge(transition["current_state"], transition["next_state"],
-                   label=transition["letter"])
+            if transition["next_state"] in self.final_states:
+                diagram.edge(
+                        transition["current_state"], transition["next_state"], label=transition["letter"], color="red")
+            else: diagram.edge(transition["current_state"],
+                             transition["next_state"], label=transition["letter"])
         for state in self.initial_states:
             diagram.node(f's-{state}',shape='point')
             diagram.edge(f's-{state}', state)
         diagram.render(filename='diagram.gv', directory='diagrams',
-                       view=True, cleanup=True, format='svg')
-        input("\nRegresar...")
+                       view=True, cleanup=True, format='jpg')
         self.showMenu()
 
     

@@ -1,30 +1,11 @@
+# Elaborado por Daniel Hernando Mantilla 
+# Código: 1005040227
 from afd import AFD
 from afnd import AFND
 from graphviz import *
-
 class Conversion(AFND):
     def __init__(self):
         super().__init__()
-        self.alphabet = ["a", "b"]
-        self.states = ["q0", "q1", "q2", "q3"]
-        self.initial_states = ["q0","q2"]
-        self.final_states = ["q3"]
-        self.transitions = [
-            {"current_state": "q0", "letter": "a", "next_state": "q1"},
-            {"current_state": "q0", "letter": "b", "next_state": "q2"},
-            {"current_state": "q1", "letter": "a", "next_state": "q3"},
-            {"current_state": "q1", "letter": "b", "next_state": "q2"},
-            {"current_state": "q2", "letter": "a", "next_state": "q1"},
-            {"current_state": "q2", "letter": "b", "next_state": "q3"},
-            {"current_state": "q3", "letter": "a", "next_state": "q3"},
-            {"current_state": "q3", "letter": "b", "next_state": "q3"}
-        ]
-        self.epsilon_transitions = [
-            {"current_state": "q0", "letter": "b", "next_state": "q1"},
-            {"current_state": "q0", "letter": "a", "next_state": "q2"},
-            {"current_state": "q1", "letter": "b", "next_state": "q3"},
-            {"current_state": "q2", "letter": "a", "next_state": "q3"}
-        ]
         self.afd = self.createBlankAFD()
     
     def showMenu(self):
@@ -81,20 +62,50 @@ class Conversion(AFND):
         afd.transitions = []
         return afd
     
-    def getAFNDStates(self):
-        states = []
-        for state in self.initial_states:
-            states.append(self.getAFNDState(state))
+    def addStates(self, states, state):
+        for letter in self.alphabet:
+            nextStates = self.getNextStates(state, letter)
+            for nextState in nextStates:
+                if nextState not in states and nextState != "Ø":
+                    states.append(nextState)
+                    self.addStates(states, nextState)
         return states
+    
+    def getAFNDStates(self):
+        states = self.initial_states[:]
+        self.addStates(states, self.initial_states[0])
+        return states
+    
+    def getNextStates(self, state, letter):
+        nextStates = []
+        add = False
+        for transition in self.transitions:
+            if transition["current_state"] == state and transition["letter"] == letter:
+                nextStates.append(transition["next_state"])
+                add = True
+        if not add:
+            nextStates.append("Ø")
+        return nextStates
+
+    def getAFNDTransitions(self):
+        transitions = []
+        for state in self.afd.states:
+            for letter in self.alphabet:
+                nextStates = self.getNextStates(state, letter)
+                if len(nextStates) > 0:
+                    transitions.append({"current_state": state, "letter": letter, "next_state": nextStates})
+                else: # añade transicion al conjunto vacio
+                    transitions.append({"current_state": state, "letter": letter, "next_state": "Ø"})
+        return transitions
 
     def convertAFNDtoAFD(self):
         self.clearConsole()
         self.afd = self.createBlankAFD()
         self.afd.alphabet = self.alphabet
         self.afd.final_states = self.final_states
-        newStates = [self.initial_states]
-        
         self.afd.states = self.getAFNDStates()
+        self.afd.initial_states = self.initial_states[0]
+        self.afd.transitions = self.getAFNDTransitions()
         input("AFD generado")
         self.showMenu()
 

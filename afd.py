@@ -1,20 +1,48 @@
+# Elaborado por Daniel Hernando Mantilla 
+# Código: 1005040227
 import os
 from graphviz import *
-
-
+# clase para representar un automata finito determinista
 class AFD:
     def __init__(self):
-        self.alphabet = ["a", "b"]
-        self.states = ["s1", "s2", "s3"]
-        self.initial_state = "s1"
-        self.final_states = ["s3"]
+        self.alphabet = ["0", "1"]
+        self.states = ["s0", "s1", "s2", "s3", "s4", "s5", "s6",
+                       "s7", "s8", "s9", "s10", "s11", "s12", "s13", "s14", "s15"]
+        self.initial_state = "s0"
+        self.final_states = ["s7", "s15"]
         self.transitions = [
-            {"current_state": "s1", "letter": "a", "next_state": "s2"},
-            {"current_state": "s1", "letter": "b", "next_state": "s1"},
-            {"current_state": "s2", "letter": "a", "next_state": "s3"},
-            {"current_state": "s2", "letter": "b", "next_state": "s1"},
-            {"current_state": "s3", "letter": "a", "next_state": "s2"},
-            {"current_state": "s3", "letter": "b", "next_state": "s3"}
+            {"current_state": "s0", "letter": "0", "next_state": "s1"},
+            {"current_state": "s0", "letter": "1", "next_state": "s1"},
+            {"current_state": "s1", "letter": "0", "next_state": "s2"},
+            {"current_state": "s1", "letter": "1", "next_state": "s2"},
+            {"current_state": "s2", "letter": "0", "next_state": "s3"},
+            {"current_state": "s2", "letter": "1", "next_state": "s3"},
+            {"current_state": "s3", "letter": "0", "next_state": "s4"},
+            {"current_state": "s3", "letter": "1", "next_state": "s4"},
+            {"current_state": "s4", "letter": "0", "next_state": "s5"},
+            {"current_state": "s4", "letter": "1", "next_state": "s5"},
+            {"current_state": "s5", "letter": "0", "next_state": "s6"},
+            {"current_state": "s5", "letter": "1", "next_state": "s6"},
+            {"current_state": "s6", "letter": "0", "next_state": "s7"},
+            {"current_state": "s6", "letter": "1", "next_state": "s7"},
+            {"current_state": "s7", "letter": "0", "next_state": "s8"},
+            {"current_state": "s7", "letter": "1", "next_state": "s8"},
+            {"current_state": "s8", "letter": "0", "next_state": "s9"},
+            {"current_state": "s8", "letter": "1", "next_state": "s9"},
+            {"current_state": "s9", "letter": "0", "next_state": "s10"},
+            {"current_state": "s9", "letter": "1", "next_state": "s10"},
+            {"current_state": "s10", "letter": "0", "next_state": "s11"},
+            {"current_state": "s10", "letter": "1", "next_state": "s11"},
+            {"current_state": "s11", "letter": "0", "next_state": "s12"},
+            {"current_state": "s11", "letter": "1", "next_state": "s12"},
+            {"current_state": "s12", "letter": "0", "next_state": "s13"},
+            {"current_state": "s12", "letter": "1", "next_state": "s13"},
+            {"current_state": "s13", "letter": "0", "next_state": "s14"},
+            {"current_state": "s13", "letter": "1", "next_state": "s14"},
+            {"current_state": "s14", "letter": "0", "next_state": "s15"},
+            {"current_state": "s14", "letter": "1", "next_state": "s15"},
+            {"current_state": "s15", "letter": "0", "next_state": "s8"},
+            {"current_state": "s15", "letter": "1", "next_state": "s8"},
         ]
 
     def clearConsole(self):
@@ -22,6 +50,7 @@ class AFD:
 
     def showMenu(self):
         self.clearConsole()
+        print("Menú principal")
         print("1. Ingresar alfabeto")
         print("2. Ingresar estados")
         print("3. Ingresar estado inicial")
@@ -123,7 +152,11 @@ class AFD:
         for letter in word:
             if letter in self.alphabet:
                 for transition in self.transitions:
-                    if transition["current_state"] == current_state and transition["letter"] == letter:
+                    if type(transition["next_state"]) is list:
+                        if transition["current_state"] == current_state and transition["letter"] == letter:
+                            current_state = transition["next_state"][0]
+                            break
+                    elif transition["current_state"] == current_state and transition["letter"] == letter:
                         current_state = transition["next_state"]
                         break
             else:
@@ -140,22 +173,56 @@ class AFD:
         else:
             self.showMenu()
 
+    def getTransition(self, state):
+        transitions = []
+        for transition in self.transitions:
+            if transition["current_state"] == state:
+                bol = False
+                for transition2 in transitions:
+                    if transition2["next_state"] == transition["next_state"]:
+                        transition2["letter"] = f"{transition2['letter']}, {transition['letter']}"
+                        bol = True
+                if not bol:
+                    transitions.append(transition)
+        return transitions
+
+    def calcTransitions(self):
+        transitions = []
+        for state in self.states:
+            for transition in self.getTransition(state):
+                transitions.append(transition)
+        return transitions
+
     def showAFDDiagram(self, callback=None):
         self.clearConsole()
         diagram = Digraph(comment="Diagrama de estados")
-        diagram.attr(rankdir='LR', size='8,5')
-        diagram.node('ini', shape='Mdiamond')
-        for state in self.states:
-            if state in self.final_states:
-                diagram.node(state, shape='doublecircle')
+        diagram.attr(rankdir="LR", size='100,50')
+        for i in range(len(self.states)):
+            if self.states[i] == self.initial_state:
+                diagram.node(self.states[i], fillcolor="green", style="filled")
+            if self.states[i] in self.final_states:
+                diagram.node(self.states[i], shape='doublecircle')
             else:
-                diagram.node(state)
-        diagram.edge('ini', self.initial_state)
-        for transition in self.transitions:
-            diagram.edge(transition["current_state"],
-                         transition["next_state"], label=transition["letter"])
+                diagram.node(self.states[i])
+        transitions = self.calcTransitions()
+        for transition in transitions:
+            if type(transition["next_state"]) == list:
+                for next_state in transition["next_state"]:
+                    if next_state in self.final_states:
+                        diagram.edge(
+                            transition["current_state"], next_state, label=transition["letter"], color="red")
+                    else: diagram.edge(transition["current_state"],
+                                 next_state, label=transition["letter"])
+            else:
+                if transition["next_state"] in self.final_states:
+                    diagram.edge(
+                        transition["current_state"], transition["next_state"], label=transition["letter"], color="red")
+                else: diagram.edge(transition["current_state"],
+                             transition["next_state"], label=transition["letter"])
+        diagram.node("init", shape='point')
+        diagram.edge("init", self.initial_state)
         diagram.render(filename='diagram.gv', directory='diagrams',
-                       view=True, cleanup=True, format='svg')
+                       view=True, format="jpg", cleanup=True)
         if callback is not None:
             callback()
         else:
