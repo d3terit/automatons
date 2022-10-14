@@ -3,7 +3,7 @@ from graphviz import *
 
 
 class AFND(AFD):
-    def __init__(self):
+    def __init__(self,):
         super().__init__()
         self.initial_states = ["s1", "s2"]
         self.epsilon_transitions = [
@@ -11,6 +11,7 @@ class AFND(AFD):
         self.epsilon_closure = {}
 
     def showMenu(self):
+        self.clearConsole()
         print("1. Ingresar alfabeto")
         print("2. Ingresar estados")
         print("3. Ingresar estados iniciales")
@@ -39,13 +40,21 @@ class AFND(AFD):
         elif option == "8":
             self.executeAFND()
         elif option == "9":
-            self.showDiagram()
+            self.showAFNDDiagram()
         elif option == "0":
             exit()
         else:
             print("Opción inválida")
             input("")
             self.showMenu()
+    
+    def setInitialStates(self):
+        self.clearConsole()
+        print("Estados actuales: " + str(self.initial_states))
+        initial_states = input("Ingrese los estados iniciales separados por coma: ")
+        self.initial_states = initial_states.split(",")
+        input("Estados iniciales actualizados")
+        self.showMenu()
 
     def addEpsilonTransition(self):
         self.clearConsole()
@@ -126,7 +135,7 @@ class AFND(AFD):
         print("La palabra no pertenece al lenguaje")
         input("\nRegresar...")
         self.showMenu()
-    def showDiagram(self):
+    def showAFNDDiagram(self):
         self.clearConsole()
         diagram = Digraph('G', filename='afnd.gv')
         diagram.attr(rankdir='LR', size='8,5')

@@ -47,7 +47,7 @@ class AFD:
         elif option == "7":
             self.executeAFD()
         elif option == "8":
-            self.showDiagram()
+            self.showAFDDiagram()
         elif option == "0":
             exit()
         else:
@@ -103,7 +103,7 @@ class AFD:
                         print(transition["next_state"], end="\t")
             print()
 
-    def showAFD(self):
+    def showAFD(self, callback=None):
         self.clearConsole()
         print("Alfabeto: ", self.alphabet)
         print("Estados: ", self.states)
@@ -111,9 +111,12 @@ class AFD:
         print("Estados finales: ", self.final_states)
         self.showTransitionTable()
         input("\nRegresar...")
-        self.showMenu()
+        if callback is not None:
+            callback()
+        else:
+            self.showMenu()
 
-    def executeAFD(self):
+    def executeAFD(self, callback=None):
         self.clearConsole()
         word = input("Ingrese la palabra a evaluar: ")
         current_state = self.initial_state
@@ -132,9 +135,12 @@ class AFD:
         else:
             print("La palabra no pertenece al lenguaje")
         input("\nRegresar...")
-        self.showMenu()
+        if callback is not None:
+            callback()
+        else:
+            self.showMenu()
 
-    def showDiagram(self):
+    def showAFDDiagram(self, callback=None):
         self.clearConsole()
         diagram = Digraph(comment="Diagrama de estados")
         diagram.attr(rankdir='LR', size='8,5')
@@ -150,7 +156,10 @@ class AFD:
                          transition["next_state"], label=transition["letter"])
         diagram.render(filename='diagram.gv', directory='diagrams',
                        view=True, cleanup=True, format='svg')
-        self.showMenu()
+        if callback is not None:
+            callback()
+        else:
+            self.showMenu()
 
 
 if __name__ == "__main__":
