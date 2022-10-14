@@ -30,7 +30,7 @@ class AFD:
         print("6. Ver AFD")
         print("7. Ejecutar AFD")
         print("8. Ver diagrama de estados")
-        print("9. Salir")
+        print("0. Salir")
         option = input("Ingrese una opción: ")
         if option == "1":
             self.setAlphabet()
@@ -48,7 +48,7 @@ class AFD:
             self.executeAFD()
         elif option == "8":
             self.showDiagram()
-        elif option == "9":
+        elif option == "0":
             exit()
         else:
             print("Opción inválida")
@@ -150,9 +150,9 @@ class AFD:
                          transition["next_state"], label=transition["letter"])
         diagram.render(filename='diagram.gv', directory='diagrams',
                        view=True, cleanup=True, format='svg')
-        input("\nRegresar...")
         self.showMenu()
 
 
-afd = AFD()
-afd.showMenu()
+if __name__ == "__main__":
+    afd = AFD()
+    afd.showMenu()
