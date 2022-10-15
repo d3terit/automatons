@@ -42,6 +42,7 @@ call the function `convertAFNDtoAFD()` to convert the AFND to AFD
 
 It is all for now, I hope you enjoy it.
 
+Elaborate with Copilot - AI Code Completion for GitHub 
 # Author:
 Daniel Hernando Mantilla
 
