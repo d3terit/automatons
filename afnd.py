@@ -3,9 +3,13 @@
 from afd import AFD
 from graphviz import *
 
-
 class AFND(AFD):
+    # clase automata finito no determinista que hereda de la clase AFD
     def __init__(self,):
+        # constructor de la clase
+        # inicializa los atributos de la clase
+        # llama al constructor de la clase padre
+        # epsilon_transitions: transiciones epsilon
         super().__init__()
         self.alphabet = ["a", "b", "c", "λ"]
         self.states = ["s0", "s1", "s2", "s3"]
@@ -19,9 +23,23 @@ class AFND(AFD):
             {"current_state": "s3", "letter": "λ", "next_state": "s1"},
         ]
         self.epsilon_transitions = []
-        self.epsilon_closure = {}
 
     def showMenu(self):
+        # método que muestra el menú de opciones
+        # y ejecuta la opción seleccionada
+        # 1. ingresar alfabeto
+        # 2. ingresar estados
+        # 3. ingresar estado inicial
+        # 4. ingresar estados finales
+        # 5. ingresar transiciones
+        # 6. ingresar transiciones epsilon
+        # 7. mostrar AFND
+        # 8. evaluar palabra
+        # 9. ver diagrama de estados
+        # 0. salir
+        # si la opción no es válida, se muestra un mensaje de error
+        # y se vuelve a mostrar el menú
+        # si la opción es válida, se ejecuta la opción seleccionada
         self.clearConsole()
         print("1. Ingresar alfabeto")
         print("2. Ingresar estados")
@@ -60,6 +78,9 @@ class AFND(AFD):
             self.showMenu()
     
     def setInitialStates(self):
+        # método que permite ingresar los estados iniciales
+        # se pide al usuario que ingrese los estados iniciales separados por comas
+        # muestra un mensaje de actualización exitosa
         self.clearConsole()
         print("Estados actuales: " + str(self.initial_states))
         initial_states = input("Ingrese los estados iniciales separados por coma: ")
@@ -68,6 +89,11 @@ class AFND(AFD):
         self.showMenu()
 
     def addEpsilonTransition(self):
+        # método que permite ingresar una transición epsilon
+        # se pide al usuario que ingrese el estado actual, el símbolo y el estado siguiente
+        # se crea un diccionario con los datos ingresados
+        # se agrega el diccionario a la lista de transiciones epsilon
+        # muestra un mensaje de actualización exitosa
         self.clearConsole()
         current_state = input("Ingrese el estado actual: ")
         next_state = input("Ingrese el estado siguiente: ")
@@ -77,6 +103,11 @@ class AFND(AFD):
         self.showMenu()
 
     def getTransition(self, state, symbol):
+        # método que retorna la transición de un estado con un símbolo
+        # recorre la lista de transiciones
+        # si el estado actual y el símbolo coinciden con los datos ingresados
+        # retorna el estado siguiente
+        # si no encuentra una transición, retorna un stado vacío
         resp = []
         for transition in self.transitions:
             if transition["current_state"] == state and transition["letter"] == symbol:
@@ -89,12 +120,17 @@ class AFND(AFD):
         return resp
 
     def getTransitions(self, state):
+        # método que retorna las transiciones de un estado
+        # recorre el alfabeto y llama al método getTransition para cada símbolo 
         transitions = []
         for symbol in self.alphabet:
             transitions.append(self.getTransition(state, symbol))
         return transitions
 
     def showAllTransitions(self):
+        # método que muestra todas las transiciones del AFND
+        # recorre la lista de estados y llama al método getTransitions para cada estado
+        # muestra las transiciones en una tabla
         print("Tabla de transiciones:")
         print("\t", end="")
         for symbol in self.alphabet:
@@ -107,6 +143,14 @@ class AFND(AFD):
             print()
 
     def showAFND(self):
+        # método que muestra el AFND
+        # muestra el alfabeto
+        # muestra los estados
+        # muestra los estados iniciales
+        # muestra los estados finales
+        # muestra las transiciones
+        # muestra las transiciones epsilon
+        # muestra un mensaje para volver al menú
         self.clearConsole()
         print("Alfabeto: " + str(self.alphabet))
         print("Estados: " + str(self.states))
@@ -117,6 +161,10 @@ class AFND(AFD):
         self.showMenu()
 
     def getEpsilonClosure(self, state):
+        # método que retorna el cierre epsilon de un estado
+        # recorre la lista de transiciones epsilon
+        # si el estado actual coincide con el estado ingresado
+        # agrega el estado siguiente a la lista de estados
         resp = [state]
         for transition in self.epsilon_transitions:
             if transition["current_state"] == state:
@@ -124,6 +172,12 @@ class AFND(AFD):
         return resp
 
     def executeAFND(self):
+        # método que permite ejecutar el AFND
+        # se pide al usuario que ingrese una cadena de entrada y la separa en una lista
+        # llama el metodo gettransition para cada estado y cada símbolo de la cadena de entrada
+        # muestra el resultado de la ejecución
+        # si la cadena es valida, muestra un mensaje de aceptación
+        # si la cadena no es valida, muestra un mensaje de rechazo
         self.clearConsole()
         word = input("Ingrese la palabra a evaluar: ")
         current_states = self.initial_states
@@ -146,7 +200,15 @@ class AFND(AFD):
         print("La palabra no pertenece al lenguaje")
         input("\nRegresar...")
         self.showMenu()
+
     def showAFNDDiagram(self):
+        # método que muestra el diagrama del AFND 
+        # crea un grafico con la libreria graphviz
+        # recorre la lista de estados y agrega un nodo por cada estado
+        # recorre la lista de estados iniciales y agrega una flecha hacia el nodo
+        # recorre la lista de estados finales y agrega un circulo al nodo
+        # recorre la lista de transiciones y agrega una flecha desde el estado actual al estado siguiente
+        # se muestra el diagrama y se guarda en un archivo dentro de la carpeta diagrams
         self.clearConsole()
         diagram = Digraph('G', filename='afnd.gv')
         diagram.attr(rankdir='LR', size='100,50')
@@ -176,5 +238,7 @@ class AFND(AFD):
     
     
 if __name__ == "__main__":
+    # se crea un objeto de la clase AFND
+    # se llama al método showMenu para mostrar el menú
     afnd = AFND()
     afnd.showMenu()
