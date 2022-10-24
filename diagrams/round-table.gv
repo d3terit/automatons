@@ -1,0 +1,9 @@
+// Diagrama de estados
+digraph {
+	s0 [label=s0]
+	s1 [label=s1]
+	s0 -> s0 [label=a]
+	s0 -> s1 [label=b]
+	s1 -> s0 [label=a]
+	s1 -> s1 [label=b]
+}
