@@ -1,0 +1,9 @@
+# ignorar __pycache__ e .pyc
+
+__pycache__/
+
+*.pyc
+
+#ignorar .vscode
+
+.vscode/
