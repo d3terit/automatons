@@ -247,23 +247,7 @@ class Moore():
                 resp += '/' + i
         return resp
 
-    def calcOutput(self):
-        self.auxNames = {}
-        for transition in self.transitionIn:
-            self.auxNames[transition['currentState']] = []
-        for transition in self.transitionIn:
-            for t in transition['transisitions']:
-                for transitionOut in self.transitionOut:
-                    if transitionOut['currentState'] == transition[
-                            'currentState']:
-                        for tOut in transitionOut['transisitions']:
-                            if tOut['letter'] == t['letter']:
-                                if tOut['nexState'] not in self.auxNames[t['nexState']]:
-                                    self.auxNames[t['nexState']].append(
-                                        tOut['nexState'])
-
     def showDiagram(self):
-        self.calcOutput()
         diagram = Digraph(comment="Diagrama de estados")
         diagram.attr(rankdir="LR", size='100,100')
         for transition in self.transitionIn:
@@ -306,6 +290,72 @@ class Moore():
             else:
                 print("Opcion invalida")
                 input("Presione enter para continuar")
+
+    def transformToMoore(self):
+        currentStates = [{'state': state, 'decorators': []} for state in self.states]
+        for transitionIn in self.transitionIn:
+            for transitionOut in self.transitionOut:
+                if transitionIn['currentState'] == transitionOut[
+                        'currentState']:
+                    for tIn in transitionIn['transisitions']:
+                        for tOut in transitionOut['transisitions']:
+                            if tIn['letter'] == tOut['letter']:
+                                currentStates[self.states.index(
+                                    tIn['nexState'])]['decorators'].append(
+                                        tOut['nexState']
+                                    ) if tOut['nexState'] not in currentStates[
+                                        self.states.index(
+                                            tIn['nexState']
+                                        )]['decorators'] else None
+        newStates = []
+        for state in currentStates:
+            if len(state['decorators']) == 0:
+                newStates.append({'state': state['state']})
+            else:
+                for decorator in state['decorators']:
+                    newStates.append({
+                        'state': state['state'],
+                        'decorator': decorator
+                    })
+        def getNameOfState(state):
+            decorator = '/' + state['decorator'] if 'decorator' in state else ''
+            if len(decorator) > 0 and decorator in state['state']:
+                return state['state']
+            return state['state'] + decorator
+        newTransitionIn = []
+        newTransitionOut = []
+        for state in newStates:
+            for transitionIn in self.transitionIn:
+                if transitionIn['currentState'] == state['state']:
+                    newTransitionIn.append({
+                        'currentState': getNameOfState(state),
+                        'transisitions': transitionIn['transisitions']
+                    })
+            for transitionOut in self.transitionOut:
+                if transitionOut['currentState'] == state['state']:
+                    newTransitionOut.append({
+                        'currentState': getNameOfState(state),
+                        'transisitions': transitionOut['transisitions']
+                    })
+        for transitionIn in newTransitionIn:
+            for transitionOut in newTransitionOut:
+                if transitionIn['currentState'] == transitionOut[
+                        'currentState']:
+                    for tIn in transitionIn['transisitions']:
+                        for tOut in transitionOut['transisitions']:
+                            if tIn['letter'] == tOut['letter']:
+                                tIn['nexState'] = getNameOfState({
+                                    'state': tIn['nexState'],
+                                    'decorator': tOut['nexState']
+                                })
+        self.states = [getNameOfState(state) for state in newStates]
+        self.transitionIn = newTransitionIn
+        self.transitionOut = newTransitionOut
+        for state in newStates:
+            if state['state'] == self.initState:
+                self.initState = getNameOfState(state)
+                break              
+        input("Presione enter para continuar")      
 
     def transform(self):
         mealyTransdurcer = mealy.Mealy()

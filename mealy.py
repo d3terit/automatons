@@ -5,28 +5,40 @@ from utils import clearConsole
 class Mealy():
 
     def __init__(self):
-        self.states = ['s0', 's1']
+        self.states = ['s0', 's1', 's2', 's3']
         self.alphabetIn = ['a', 'b']
-        self.alphabetOut = [1, 2]
+        self.alphabetOut = [1, 0]
         self.initState = "s0"
         self.transitionIn = [
             {'currentState': 's0',
              'transisitions': [
-                 {'letter': 'a', 'nexState': 's0'},
-                 {'letter': 'b', 'nexState': 's1'}
+                 {'letter': 'a', 'nexState': 's1'},
+                 {'letter': 'b', 'nexState': 's0'}
              ]
             },
             {'currentState': 's1',
              'transisitions': [
-                 {'letter': 'a', 'nexState': 's0'},
-                 {'letter': 'b', 'nexState': 's1'}
+                 {'letter': 'a', 'nexState': 's3'},
+                 {'letter': 'b', 'nexState': 's0'}
              ]
+            },
+            {'currentState': 's2',
+                'transisitions': [
+                    {'letter': 'a', 'nexState': 's1'},
+                    {'letter': 'b', 'nexState': 's2'}
+                ]
+            },
+            {'currentState': 's3',
+                'transisitions': [
+                    {'letter': 'a', 'nexState': 's2'},
+                    {'letter': 'b', 'nexState': 's1'}
+                ]
             }
         ]
         self.transitionOut = [
             {'currentState': 's0',
              'transisitions': [
-                 {'letter': 'a', 'nexState': '0'},
+                 {'letter': 'a', 'nexState': '1'},
                  {'letter': 'b', 'nexState': '0'}
              ]
             },
@@ -34,6 +46,18 @@ class Mealy():
              'transisitions': [
                  {'letter': 'a', 'nexState': '1'},
                  {'letter': 'b', 'nexState': '1'}
+             ]
+            },
+            {'currentState': 's2',
+             'transisitions': [
+                 {'letter': 'a', 'nexState': '0'},
+                 {'letter': 'b', 'nexState': '1'}
+             ]
+            },
+            {'currentState': 's3',
+             'transisitions': [
+                 {'letter': 'a', 'nexState': '1'},
+                 {'letter': 'b', 'nexState': '0'}
              ]
             }
         ]
@@ -232,7 +256,8 @@ class Mealy():
         mooreTransdurcer.initState = self.initState
         mooreTransdurcer.transitionIn = self.transitionIn
         mooreTransdurcer.transitionOut = self.transitionOut
-        mooreTransdurcer.showTransformMenu()   
+        mooreTransdurcer.transformToMoore()
+        mooreTransdurcer.showTransformMenu()
 
 if "__main__" == __name__:
     transductor = Mealy()
